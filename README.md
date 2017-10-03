@@ -1,5 +1,5 @@
 # bbcodelibrary
-## Interaction with [QCP code library at Bitbucket](https://bitbucket.org/qcpadmin/qcpcodelibrary/) with the REST API
+## Interaction with [QCP code library at Bitbucket](https://bitbucket.org/qcpadmin/qcpcodelibrary/) through the REST API
 
 #### New projects
 * Browse the code library
@@ -10,7 +10,7 @@
 
 ## Installation
 
-Make sure [tidyproject](github.com/tsahota/tidyproject) is running.
+Make sure [tidyproject](https://github.com/tsahota/tidyproject) is running.
 
 Install the bbcodelibrary package:
 
@@ -21,7 +21,7 @@ library(bbcodelibrary)
 ```
 ## Tutorial
 
-Make a [tidyproject](github.com/tsahota/tidyproject):
+Make a [tidyproject](https://github.com/tsahota/tidyproject):
 
 ```R
 make_project("path/to/directory")
