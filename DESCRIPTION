@@ -1,0 +1,18 @@
+Package: bbcodelibrary
+Type: Package
+Title: QCP code library at Bitbucket Cloud R interface
+Version: 0.1.0
+Author: Robert Gray
+Maintainer: Tarj Sahota <tarjinder.sahota@astrazeneca.com>
+Description: This package allows browsing, copying and submitting of scripts stored in the 
+    QCP code library at Bitbucket Cloud through the REST API.
+License: GPL-3 | file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    tidyproject (>= 0.3.0),
+    httr,
+    jsonlite,
+    readr,
+    magrittr
+RoxygenNote: 6.0.1
