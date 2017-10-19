@@ -10,9 +10,9 @@ s.base.url <- "https://stash.rd.astrazeneca.net/rest/api/1.0/projects/~kpcm550/r
 c.username <- "qcpuser"
 c.pw <- "Huddersfield2018"
 #Server username and pw
-s.slug <- "qcptest2"
-s.username <- "kpcm550"
-s.pw <- "Cusco29("
+s.slug <- ""
+s.username <- ""
+s.pw <- ""
 
 options("mode"="cloud")
 
