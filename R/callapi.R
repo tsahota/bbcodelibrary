@@ -21,12 +21,12 @@ options("mode"="cloud")
 apigethash <- function(){
 
   if(getOption("mode")=="cloud"){
-    r.commit.list <- GET(file.path(c.base.url.2, "commits/master"),
+    r.commit.list <- httr::GET(file.path(c.base.url.2, "commits/master"),
                        authenticate(c.username, c.pw))
     stop_for_status(r.commit.list)
     mrc.hash <- content(r.commit.list, simplifyVector= FALSE)[[2]][[1]]$hash
   } else if (getOption("mode")=="server"){
-    r.commit.list <- GET(file.path(s.base.url, "commits/master"),
+    r.commit.list <- httr::GET(file.path(s.base.url, "commits/master"),
                        authenticate(s.username, s.pw))
     stop_for_status(r.commit.list)
     mrc.hash <- content(r.commit.list)$id
@@ -49,7 +49,7 @@ apigetscriptnames <- function(mrc.hash, language="all"){
     } else {
       api.list <- file.path(c.base.url.1, "src", mrc.hash, language, "/")
     }
-    r.ls <- GET(api.list, authenticate(c.username,c.pw))
+    r.ls <- httr::GET(api.list, authenticate(c.username,c.pw))
     stop_for_status(r.ls)
     ls.all <- jsonlite::fromJSON(content(r.ls, "text"), simplifyVector = FALSE)
 
@@ -57,7 +57,7 @@ apigetscriptnames <- function(mrc.hash, language="all"){
       #if looking at all directories we get a list of directories:
       dirs <- ls.all$directories
       ls.files.json <- lapply(dirs, function(x)
-        GET(file.path(c.base.url.1, "src" ,mrc.hash, x, "/"), authenticate(c.username, c.pw)))
+        httr::GET(file.path(c.base.url.1, "src" ,mrc.hash, x, "/"), authenticate(c.username, c.pw)))
       ls.files.all <- lapply(ls.files.json, function(x)
         jsonlite::fromJSON(content(x, "text"), simplifyVector = FALSE))
       ls.names <- lapply(ls.files.all, function(y)
@@ -75,7 +75,7 @@ apigetscriptnames <- function(mrc.hash, language="all"){
     }else{
       api.list <- file.path(s.base.url, "files", paste0(language, "?", mrc.hash, "&limit=1000"))
     }
-    r.ls <- GET(api.list, authenticate(s.username,s.pw))
+    r.ls <- httr::GET(api.list, authenticate(s.username,s.pw))
     stop_for_status(r.ls)
     ls.names <- unlist(content(r.ls)$values)
   }else {
@@ -94,7 +94,7 @@ apigetscriptcontent <- function(mrc.hash, file.name){
   if(getOption("mode")=="cloud"){
 
     from.api.url <- file.path(c.base.url.1, "raw", mrc.hash, file.name)
-    r.get <- GET(from.api.url, authenticate(c.username,c.pw))
+    r.get <- httr::GET(from.api.url, authenticate(c.username,c.pw))
     stop_for_status(r.get)
     cont <- content(r.get)
     if(length(cont)>0){
@@ -105,7 +105,7 @@ apigetscriptcontent <- function(mrc.hash, file.name){
   } else if(getOption("mode")=="server"){
 
     from.api.url <- paste0(file.path(s.base.url,"browse",file.name),"?",mrc.hash,"&raw")
-    r.get <- GET(from.api.url, authenticate(s.username,s.pw))
+    r.get <- httr::GET(from.api.url, authenticate(s.username,s.pw))
     stop_for_status(r.get)
     s <-   unlist(lapply(content(r.get)$lines, function(line){
       line$text
@@ -126,7 +126,7 @@ apicheckupdates <- function(mrc.hash, local.hash, file){
   if(getOption("mode")=="cloud"){
     hash.concat <- paste(mrc.hash, local.hash, sep="..")
     api.diff <- file.path(c.base.url.2, "diff", hash.concat)
-    r.diff <- GET(api.diff, authenticate(c.username, c.pw))
+    r.diff <- httr::GET(api.diff, authenticate(c.username, c.pw))
     stop_for_status(r.diff)
     diff.result <- content(r.diff, encoding="UTF-8")
     if(length(grep(file,diff.result))==0){
@@ -149,7 +149,7 @@ apicheckupdates <- function(mrc.hash, local.hash, file){
       fullname <- file
     }
     api.diff <-paste0(file.path(s.base.url., "diff", fullname), "?since=", local.hash, "&until=", mrc.hash)
-    r.diff <- GET(api.diff, authenticate(username, pw))
+    r.diff <- httr::GET(api.diff, authenticate(username, pw))
     stop_for_status(r.diff)
     if(length(content(r.diff)$diffs)==0){
       FALSE
@@ -171,13 +171,13 @@ apimakefork <- function(forkname){
   if(getOption("mode")=="cloud"){
 
     body.fk <- list("name"=forkname)
-    r.fk <- POST(file.path(c.base.url.1, "fork"),body=body.fk, encode="form", authenticate(c.username,c.pw))
+    r.fk <- httr::POST(file.path(c.base.url.1, "fork"),body=body.fk, encode="form", authenticate(c.username,c.pw))
     stop_for_status(r.fk)
 
   }else if(getOption("mode")=="server"){
 
     body.fk <- list("name"=forkname)
-    r.fk <- POST(s.base.url ,body=body.fk, encode="json", authenticate(s.username,s.pw))
+    r.fk <- httr::POST(s.base.url ,body=body.fk, encode="json", authenticate(s.username,s.pw))
     stop_for_status(r.fk)
 
   } else {
@@ -198,10 +198,10 @@ apicommitfile <- function(forkname, filename, contents, message){
     api.cmt <- file.path("https://api.bitbucket.org/2.0/repositories", c.username, forkname,"src")
     body.cmt <-list("message"=message)
     body.cmt[[filename]] <- contents
-    r.cmt <- POST(api.cmt, body = body.cmt, encode = "form", authenticate(c.username,c.pw))
+    r.cmt <- httr::POST(api.cmt, body = body.cmt, encode = "form", authenticate(c.username,c.pw))
     if(r.cmt$status_code==403)
       Sys.sleep(5)
-    r.cmt <- POST(api.cmt, body = body.cmt, encode = "form", authenticate(c.username,c.pw))
+    r.cmt <- httr::POST(api.cmt, body = body.cmt, encode = "form", authenticate(c.username,c.pw))
     stop_for_status(r.cmt)
 
 
@@ -210,7 +210,7 @@ apicommitfile <- function(forkname, filename, contents, message){
     stop("Committing files with Bitbucket Server is not currently working. Check back later.")
     #api.put <- file.path(s.base.url, "browse", "R/testE.R")
     #body.put <- list("message"="A test message", "branch"="master", "content"=httr::upload_file(tp))
-    #r.put <- PUT(api.put, body = body.put, encode = "multipart", authenticate(s.username, s.pw))
+    #r.put <- httr::PUT(api.put, body = body.put, encode = "multipart", authenticate(s.username, s.pw))
 
   }else{
     stop("Invalid mode. Set option mode to cloud or server.")
@@ -233,10 +233,10 @@ apimakepullrequest <- function(forkname, message){
     body.pr = list("source"=list("repository"=list("type"="repository", "full_name"=repo.name),
                                  "branch"=list("name"="master")),
                    "title"=message)
-    r.pr <- POST(api.pr, body=body.pr,encode = "json", authenticate(c.username,c.pw))
+    r.pr <- httr::POST(api.pr, body=body.pr,encode = "json", authenticate(c.username,c.pw))
     if(r.pr$status_code==403)
       Sys.sleep(5)
-    r.pr <- POST(api.pr, body=body.pr,encode = "json", authenticate(c.username,c.pw))
+    r.pr <- httr::POST(api.pr, body=body.pr,encode = "json", authenticate(c.username,c.pw))
 
     stop_for_status(r.pr)
     if(r.pr$status_code<300){
@@ -249,7 +249,7 @@ apimakepullrequest <- function(forkname, message){
                    "toRef"=list("id"="master" ,"repository"=list("project"=list("key"=paste0("~",s.username)),"slug"=s.slug)),
                    "fromRef"=list("id"="master", "repository"=list("project"=list("key"=paste0("~", s.username)),"slug"=forkname))
                    )
-    r.pr <- POST(api.pr, body=body.pr, encode="json", authenticate(s.username, s.pw))
+    r.pr <- httr::POST(api.pr, body=body.pr, encode="json", authenticate(s.username, s.pw))
     stop_for_status(r.pr)
     if(r.pr$status_code<300){
       TRUE
@@ -271,7 +271,7 @@ apideletefork <- function(forkname){
   if(getOption("mode")=="cloud"){
 
     api.d <- file.path("https://api.bitbucket.org/2.0/repositories", c.username, forkname)
-    r.d <- DELETE(api.d, authenticate(c.username, c.pw))
+    r.d <- httr::DELETE(api.d, authenticate(c.username, c.pw))
     stop_for_status(r.d)
     if(status_code(r.d)==204){
       message("Fork successfully deleted!")
@@ -279,7 +279,7 @@ apideletefork <- function(forkname){
   } else if(getOption("mode")=="server") {
 
     api.d <- file.path("https://stash.rd.astrazeneca.net/rest/api/1.0/projects", paste0("~", s.username), "repos",forkname)
-    r.d <- DELETE(api.d, authenticate(s.username, s.pw))
+    r.d <- httr::DELETE(api.d, authenticate(s.username, s.pw))
     stop_for_status(r.d)
     if(status_code(r.d)==202){
       message("Fork successfully deleted!")
