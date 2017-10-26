@@ -1,7 +1,7 @@
 #' @import httr
 
 #BB repo username/slug
-c.username.slug <- "qcptest/pmxcodelibrary_demo"
+c.username.slug <- "qcpadmin/qcpcodelibrary"
 c.base.url.1 <- file.path("https://api.bitbucket.org/1.0/repositories", c.username.slug)
 c.base.url.2 <- file.path("https://api.bitbucket.org/2.0/repositories", c.username.slug)
 s.base.url <- "https://stash.rd.astrazeneca.net/rest/api/1.0/projects/~kpcm550/repos/qcptest2"
