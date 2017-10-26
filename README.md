@@ -15,7 +15,7 @@ Make sure [tidyproject](https://github.com/tsahota/tidyproject) is running.
 Install the bbcodelibrary package:
 
 ```R
-install.packages("devtool")
+install.packages("devtools")
 devtools::install_github("rgray1/bbcodelibrary")
 library(bbcodelibrary)
 ```
